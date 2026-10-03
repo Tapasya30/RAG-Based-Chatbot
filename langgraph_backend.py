@@ -7,11 +7,32 @@ from langgraph.graph.message import add_messages
 from dotenv import load_dotenv
 import os
 
+import streamlit as st
+
 load_dotenv()
 
-api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+def _get_api_key():
+    try:
+        if hasattr(st, "secrets") and "GEMINI_API_KEY" in st.secrets:
+            return st.secrets["GEMINI_API_KEY"]
+        if hasattr(st, "secrets") and "GOOGLE_API_KEY" in st.secrets:
+            return st.secrets["GOOGLE_API_KEY"]
+    except Exception:
+        pass
+    return os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or None
+
+api_key = _get_api_key()
+if api_key:
+    os.environ["GEMINI_API_KEY"] = api_key
+    os.environ["GOOGLE_API_KEY"] = api_key
+
 model_name = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
-llm = ChatGoogleGenerativeAI(model=model_name, google_api_key=api_key)
+
+llm_kwargs = {"model": model_name}
+if api_key:
+    llm_kwargs["google_api_key"] = api_key
+
+llm = ChatGoogleGenerativeAI(**llm_kwargs)
 
 class ChatState(TypedDict):
     messages: Annotated[list[BaseMessage], add_messages]

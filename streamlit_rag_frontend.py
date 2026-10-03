@@ -1,3 +1,4 @@
+import os
 import uuid
 
 import streamlit as st
@@ -94,6 +95,11 @@ else:
 
 # ============================ Main Layout ========================
 st.title("Multi Utility Chatbot")
+
+# Check for API key
+has_key = bool(os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"))
+if not has_key:
+    st.error("⚠️ **GEMINI_API_KEY is missing!**\n\nIf running on **Streamlit Cloud**, go to your App Dashboard → **Manage App** (lower right) → **Settings** (⋮) → **Secrets**, and add:\n```toml\nGEMINI_API_KEY = \"your_api_key_here\"\n```")
 
 # Chat area
 for message in st.session_state["message_history"]:

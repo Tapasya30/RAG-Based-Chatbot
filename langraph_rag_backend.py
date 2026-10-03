@@ -19,15 +19,39 @@ from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 import requests
 
+import streamlit as st
+
 load_dotenv()
 
 # -------------------
 # 1. LLM + embeddings
 # -------------------
-api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+def _get_api_key():
+    try:
+        if hasattr(st, "secrets") and "GEMINI_API_KEY" in st.secrets:
+            return st.secrets["GEMINI_API_KEY"]
+        if hasattr(st, "secrets") and "GOOGLE_API_KEY" in st.secrets:
+            return st.secrets["GOOGLE_API_KEY"]
+    except Exception:
+        pass
+    return os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or None
+
+api_key = _get_api_key()
+if api_key:
+    os.environ["GEMINI_API_KEY"] = api_key
+    os.environ["GOOGLE_API_KEY"] = api_key
+
 model_name = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
-llm = ChatGoogleGenerativeAI(model=model_name, google_api_key=api_key)
-embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001", google_api_key=api_key)
+
+llm_kwargs = {"model": model_name}
+emb_kwargs = {"model": "models/gemini-embedding-001"}
+
+if api_key:
+    llm_kwargs["google_api_key"] = api_key
+    emb_kwargs["google_api_key"] = api_key
+
+llm = ChatGoogleGenerativeAI(**llm_kwargs)
+embeddings = GoogleGenerativeAIEmbeddings(**emb_kwargs)
 
 # -------------------
 # 2. PDF retriever store (per thread)
