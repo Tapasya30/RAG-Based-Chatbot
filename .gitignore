@@ -1,56 +1,37 @@
-# =========================================
-# 1. Sensitive Keys & Environment Files (CRITICAL)
-# =========================================
+# Sensitive Keys & Environment Files
 .env
 .env.*
 *.env
 .streamlit/secrets.toml
 
-# =========================================
-# 2. Virtual Environments
-# =========================================
+# Virtual Environments
 venv/
 .venv/
 env/
 ENV/
-env.bak/
-venv.bak/
 
-# =========================================
-# 3. Database & Runtime Chat Checkpoints
-# =========================================
+# Database & Runtime Checkpoints
 *.db
 *.db-shm
 *.db-wal
-*.sqlite
-*.sqlite3
 chatbot.db
 chatbot.db-shm
 chatbot.db-wal
 
-# =========================================
-# 4. Python Cache & Build Artifacts
-# =========================================
+# Python Cache & Bytecode
 __pycache__/
 *.py[cod]
 *$py.class
 .pytest_cache/
 .coverage
 
-# =========================================
-# 5. Temporary Uploads & Vector Indexes (Optional)
-# =========================================
+# Temporary files & Vector stores
 *.pdf
 *.faiss
 *.pkl
 
-# =========================================
-# 6. IDE & OS Generated Files
-# =========================================
+# IDE & OS Generated
 .vscode/
 .idea/
-*.swp
-*.swo
 .DS_Store
 Thumbs.db
-ehthumbs.db
