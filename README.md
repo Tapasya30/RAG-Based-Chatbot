@@ -8,10 +8,9 @@ A modular, multi-tier AI Chatbot built using **LangGraph**, **Google Gemini**, a
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://your-app-name.streamlit.app)
 
-> **Live Application URL:** [https://your-app-name.streamlit.app](https://your-app-name.streamlit.app) *(Replace with your deployed Streamlit Community Cloud link)*
-
+> **Live Application URL:** [https://your-app-name.streamlit.app](https://rag-based-chatbot-htwznbbtsappf5jbmlrnbwu.streamlit.app/)
 ---
-
+  
 ## ✨ Features
 
 - **📄 Document RAG (PDF Q&A)**: Upload PDFs, chunk & embed with Google Gemini Embeddings, and query with FAISS vector search.
