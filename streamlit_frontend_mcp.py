@@ -6,6 +6,23 @@ from langgraph_mcp_backend import chatbot, retrieve_all_threads, submit_async_ta
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
 # =========================== Utilities ===========================
+def extract_text(content) -> str:
+    """Extract clean string text from strings, lists, or Gemini structured chunks."""
+    if isinstance(content, str):
+        return content
+    elif isinstance(content, list):
+        text_parts = []
+        for part in content:
+            if isinstance(part, str):
+                text_parts.append(part)
+            elif isinstance(part, dict) and "text" in part:
+                text_parts.append(part["text"])
+            elif hasattr(part, "text"):
+                text_parts.append(str(part.text))
+        return "".join(text_parts)
+    return str(content) if content is not None else ""
+
+
 def generate_thread_id():
     return uuid.uuid4()
 
@@ -55,7 +72,7 @@ for thread_id in st.session_state["chat_threads"][::-1]:
         temp_messages = []
         for msg in messages:
             role = "user" if isinstance(msg, HumanMessage) else "assistant"
-            temp_messages.append({"role": role, "content": msg.content})
+            temp_messages.append({"role": role, "content": extract_text(msg.content)})
         st.session_state["message_history"] = temp_messages
 
 # ============================ Main UI ============================
@@ -63,7 +80,7 @@ for thread_id in st.session_state["chat_threads"][::-1]:
 # Render history
 for message in st.session_state["message_history"]:
     with st.chat_message(message["role"]):
-        st.text(message["content"])
+        st.markdown(extract_text(message["content"]))
 
 user_input = st.chat_input("Type here")
 
@@ -71,7 +88,7 @@ if user_input:
     # Show user's message
     st.session_state["message_history"].append({"role": "user", "content": user_input})
     with st.chat_message("user"):
-        st.text(user_input)
+        st.markdown(user_input)
 
     CONFIG = {
         "configurable": {"thread_id": st.session_state["thread_id"]},
@@ -126,7 +143,9 @@ if user_input:
 
                 # Stream ONLY assistant tokens
                 if isinstance(message_chunk, AIMessage):
-                    yield message_chunk.content
+                    text = extract_text(message_chunk.content)
+                    if text:
+                        yield text
 
         ai_message = st.write_stream(ai_only_stream())
 
@@ -138,5 +157,5 @@ if user_input:
 
     # Save assistant message
     st.session_state["message_history"].append(
-        {"role": "assistant", "content": ai_message}
+        {"role": "assistant", "content": extract_text(ai_message)}
     )
